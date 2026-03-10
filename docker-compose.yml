@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: promesa_mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_DATABASE: promesa_midtown
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - promesa_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: promesa_backend
+    restart: unless-stopped
+    ports:
+      - '5000:5000'
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/promesa_midtown
+      - JWT_SECRET=${JWT_SECRET:-promesa_midtown_jwt_secret_2024}
+      - PORT=5000
+    depends_on:
+      - mongo
+    networks:
+      - promesa_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: promesa_frontend
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
+    networks:
+      - promesa_network
+
+volumes:
+  mongo_data:
+
+networks:
+  promesa_network:
+    driver: bridge

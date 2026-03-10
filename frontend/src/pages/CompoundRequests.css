@@ -1,0 +1,77 @@
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.request-card {
+  padding: 24px;
+}
+
+.request-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.request-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.request-meta {
+  flex: 1;
+}
+
+.request-meta h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.request-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.request-date {
+  font-size: 13px;
+  color: var(--color-gray-2);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.request-desc {
+  font-size: 14px;
+  color: var(--color-gray-1);
+  line-height: 1.6;
+  padding-left: 44px;
+  margin-bottom: 8px;
+}
+
+.request-remarks {
+  font-size: 13px;
+  color: var(--color-gray-1);
+  padding-left: 44px;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+.request-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-gray-4);
+  padding-left: 44px;
+}
+
+@media (max-width: 600px) {
+  .request-desc,
+  .request-remarks,
+  .request-actions {
+    padding-left: 0;
+  }
+}
