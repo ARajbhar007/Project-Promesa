@@ -1,0 +1,17 @@
+/* App.css — layout and toast overrides */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}
+
+/* React Toastify overrides */
+.Toastify__toast {
+  border-radius: 12px !important;
+  font-family: var(--font-family) !important;
+  font-size: 14px !important;
+}

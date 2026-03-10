@@ -1,0 +1,117 @@
+.register-page .auth-page {
+  align-items: flex-start;
+  padding: 40px 24px;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 660px;
+  padding: 48px 40px;
+  margin: 0 auto;
+}
+
+/* Steps */
+.register-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 36px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  flex: 1;
+}
+
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: calc(50% + 18px);
+  right: calc(-50% + 18px);
+  height: 2px;
+  background: var(--color-gray-3);
+  z-index: 0;
+}
+
+.step.done:not(:last-child)::after {
+  background: var(--color-blue);
+}
+
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-gray-4);
+  color: var(--color-gray-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.step.active .step-circle {
+  background: var(--color-blue);
+  color: white;
+}
+
+.step.done .step-circle {
+  background: var(--color-success);
+  color: white;
+}
+
+.step-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-1);
+  white-space: nowrap;
+}
+
+.step.active .step-label {
+  color: var(--color-blue);
+  font-weight: 600;
+}
+
+.form-step {
+  /* Uses fade-in from global CSS */
+}
+
+.step-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: var(--border-radius-sm);
+}
+
+.step-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.step-actions .btn {
+  flex: 1;
+  padding: 14px;
+  font-size: 15px;
+  border-radius: var(--border-radius-sm);
+}
+
+@media (max-width: 600px) {
+  .register-card {
+    padding: 32px 20px;
+  }
+
+  .step-label {
+    display: none;
+  }
+}
