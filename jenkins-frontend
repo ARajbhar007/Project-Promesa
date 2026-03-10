@@ -1,0 +1,140 @@
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk'
+        nodejs 'nodejs'
+    }
+    environment {
+        SCANNER_HOME = tool 'sonar-scanner'
+        AWS_ACCOUNT_ID = credentials('ACCOUNT_ID')
+        AWS_ECR_REPO_NAME = credentials('ECR_REPO_PROMESA_FRONTEND')
+        AWS_DEFAULT_REGION = 'ap-south-1'
+        REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/"
+    }
+    stages {
+        stage('Cleaning Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Checkout from Git') {
+            steps {
+                git branch: 'main', credentialsId: 'GITHUB', url: 'https://github.com/ARajbhar007/Project-Promesa.git'
+            }
+        }
+        stage('Sonarqube Analysis') {
+            steps {
+                dir('frontend') {
+                    withSonarQubeEnv('sonar-server') {
+                        sh '''
+                            $SCANNER_HOME/bin/sonar-scanner \
+                            -Dsonar.projectKey=promesa-frontend \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=http://<YOUR_SONAR_HOST>:9000 \
+                            -Dsonar.login=<YOUR_SONAR_TOKEN>
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Quality Check') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                }
+            }
+        }
+        stage('OWASP Dependency Check') {
+            steps {
+                dir('frontend') {
+                    dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                }
+            }
+        }
+        stage('Trivy File Scan') {
+            steps {
+                dir('frontend') {
+                    sh 'trivy fs . > trivyfs-frontend.txt'
+                }
+            }
+        }
+        stage('Docker Image Build') {
+            steps {
+                script {
+                    dir('frontend') {
+                        sh 'docker system prune -f'
+                        sh 'docker container prune -f'
+                        sh 'docker build -t ${AWS_ECR_REPO_NAME} .'
+                    }
+                }
+            }
+        }
+        stage('ECR Image Pushing') {
+            steps {
+                script {
+                    sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${REPOSITORY_URI}'
+                    sh 'docker tag ${AWS_ECR_REPO_NAME} ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}'
+                    sh 'docker push ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}'
+                }
+            }
+        }
+        stage('Trivy Image Scan') {
+            steps {
+                sh 'trivy image ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER} > trivyimage-frontend.txt'
+            }
+        }
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', credentialsId: 'GITHUB', url: 'https://github.com/ARajbhar007/Project-Promesa.git'
+            }
+        }
+        stage('Update Deployment File') {
+            environment {
+                GIT_REPO_NAME = "Project-Promesa"
+                GIT_USER_NAME = "ARajbhar007"
+            }
+            steps {
+                dir('k8s/frontend') {
+                    withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                        script {
+                            sh 'git config user.email "arajbhar140@gmail.com"'
+                            sh 'git config user.name "ARajbhar007"'
+
+                            // Extract current image tag safely
+                            def currentTag = sh(
+                                script: "grep -oP '(?<=promesa-frontend:)[^ ]+' deployment.yaml || echo latest",
+                                returnStdout: true
+                            ).trim()
+                            echo "Current tag: ${currentTag}"
+
+                            // Replace with BUILD_NUMBER
+                            sh "sed -i 's|${AWS_ECR_REPO_NAME}:${currentTag}|${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}|g' deployment.yaml"
+
+                            // Commit safely
+                            sh "git add deployment.yaml"
+                            def commitStatus = sh(script: "git commit -m 'Update frontend deployment image to version ${BUILD_NUMBER}'", returnStatus: true)
+                            if (commitStatus != 0) {
+                                echo "No changes to commit"
+                            }
+
+                            // Push
+                            sh "git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline execution completed for Promesa Frontend.'
+        }
+        success {
+            echo 'Promesa Frontend pipeline succeeded!'
+        }
+        failure {
+            echo 'Promesa Frontend pipeline failed!'
+        }
+    }
+}
