@@ -34,6 +34,12 @@ A full-stack **MERN** (MongoDB, Express, React, Node.js) society management web 
 
 ---
 
+## ☁️ Production Deployment (AWS EKS)
+
+For a complete step-by-step guide to deploy this application on AWS EKS with a custom domain, HTTPS, and public access, see the **[Deployment Guide](DEPLOYMENT_GUIDE.md)**.
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
