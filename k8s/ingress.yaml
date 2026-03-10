@@ -1,0 +1,43 @@
+# IMPORTANT: Before applying this file, replace the following placeholders:
+#   1. Replace <AWS_ACCOUNT_ID> with your 12-digit AWS account number (e.g., 123456789012)
+#   2. Replace <YOUR-CERT-ID> with the certificate ID from AWS Certificate Manager (ACM)
+#      It looks like: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+#   3. Replace "promesa-midtown.com" and "www.promesa-midtown.com" with your actual domain name
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: promesa-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    # IMPORTANT: Replace <AWS_ACCOUNT_ID> and <YOUR-CERT-ID> with your actual values.
+    # Also replace "ap-south-1" in the ARN below if you are deploying in a different AWS region.
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-south-1:<AWS_ACCOUNT_ID>:certificate/<YOUR-CERT-ID>"
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+spec:
+  rules:
+    # IMPORTANT: Replace with your actual domain name
+    - host: promesa-midtown.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+    # IMPORTANT: Replace with your actual domain name (www version)
+    - host: www.promesa-midtown.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
