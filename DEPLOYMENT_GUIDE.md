@@ -305,7 +305,13 @@ Open `k8s/secrets.yaml` in a text editor and replace `CHANGE_ME_TO_A_STRONG_SECR
 
 Run these commands one at a time, waiting between each:
 
-**Deploy the secret first:**
+**Create the namespace first:**
+
+```bash
+kubectl apply -f k8s/namespace.yaml
+```
+
+**Deploy the secret:**
 
 ```bash
 kubectl apply -f k8s/secrets.yaml
