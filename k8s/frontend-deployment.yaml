@@ -18,7 +18,7 @@ spec:
         - name: frontend
           # IMPORTANT: Replace <AWS_ACCOUNT_ID> with your 12-digit AWS account number.
           # Example: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/promesa-frontend:latest
-          image: <AWS_ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com/promesa-frontend:latest
+          image: 175200622339.dkr.ecr.ap-south-1.amazonaws.com/frontend:latest
           ports:
             - containerPort: 80
           resources:
