@@ -20,7 +20,7 @@ metadata:
 spec:
   rules:
     # IMPORTANT: Replace with your actual domain name
-    - host: promesa-midtown.com
+    - host: promesa.devashu.xyz
       http:
         paths:
           - path: /
@@ -31,7 +31,7 @@ spec:
                 port:
                   number: 80
     # IMPORTANT: Replace with your actual domain name (www version)
-    - host: www.promesa-midtown.com
+    - host: hhtp://promesa.devashu.xyz
       http:
         paths:
           - path: /
