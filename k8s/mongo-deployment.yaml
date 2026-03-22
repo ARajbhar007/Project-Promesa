@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mongo-pvc
+  namespace: project-promesa
 spec:
   accessModes:
     - ReadWriteOnce
@@ -15,6 +16,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mongo
+  namespace: project-promesa
   labels:
     app: mongo
 spec:
@@ -60,6 +62,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mongo
+  namespace: project-promesa
   labels:
     app: mongo
 spec:

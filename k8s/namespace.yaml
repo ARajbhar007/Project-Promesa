@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project-promesa
+  labels:
+    app: project-promesa
+    project: promesa-midtown
